@@ -5,10 +5,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SimpleDashboardPage from "./pages/SimpleDashboardPage";
 import DashboardPage from "./pages/DashboardPage";
+import LoginPage from "./pages/LoginPage";
 
 const HomePage = () => <h1>Home Page</h1>;
 const UsersPage = () => <h1>Users Page</h1>;
@@ -26,7 +25,7 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "",
+        index: true,
         element: <Navigate to={"dashboard"} />,
       },
       {
@@ -34,7 +33,7 @@ const router = createBrowserRouter([
         element: <DashboardPage />,
         children: [
           {
-            path: "",
+            index: true,
             element: <HomePage />,
           },
           {
