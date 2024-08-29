@@ -2,11 +2,13 @@ import store from "../store";
 import {
   addProduct,
   editProduct,
+  setCategories,
   setError,
   setIsLoading,
   setProducts,
 } from "../store/slices/productsSlice";
 import axiosInstance from "./axiosInstance";
+import dayjs from "dayjs";
 
 class ProductApi {
   static async getProducts(page = 1, limit = 10, query) {
@@ -75,6 +77,30 @@ class ProductApi {
     } catch (error) {
       console.error(error.message);
       store.dispatch(setError(error.message));
+    } finally {
+      store.dispatch(setIsLoading(false));
+    }
+  }
+
+  static async getCategories() {
+    try {
+      const { categoriesLastFetch } = store.getState().products;
+      store.dispatch(setIsLoading(true));
+      if (categoriesLastFetch) {
+        const hourDifference = dayjs(new Date().toISOString()).diff(
+          categoriesLastFetch,
+          "hour"
+        );
+        if (hourDifference === 0) {
+          return;
+        }
+      }
+
+      const res = await axiosInstance.get("/categories");
+      const { data } = res;
+      store.dispatch(setCategories(data));
+    } catch (error) {
+      console.error(error.message);
     } finally {
       store.dispatch(setIsLoading(false));
     }

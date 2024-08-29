@@ -10,6 +10,7 @@ import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import CounterPage from "./pages/CounterPage";
 import ProductsPage from "./pages/ProductsPage";
+import ProductDetailsPage from "./pages/ProductDetailsPage";
 
 const HomePage = () => <h1>Home Page</h1>;
 const UsersPage = () => <h1>Users Page</h1>;
@@ -43,6 +44,14 @@ const router = createBrowserRouter([
           {
             path: "products",
             element: <ProductsPage />,
+          },
+          {
+            path: "products/new",
+            element: <ProductDetailsPage />,
+          },
+          {
+            path: "products/:id",
+            element: <ProductDetailsPage />,
           },
           {
             path: "transactions",

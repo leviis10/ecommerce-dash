@@ -75,9 +75,9 @@ function DashboardPage() {
             <nav className="flex-1 px-2 py-4 space-y-1">
               {navigation.map((item) => (
                 <NavLink
+                  end
                   key={item.name}
                   to={item.href}
-                  end
                   className={({ isActive }) =>
                     classNames(
                       isActive

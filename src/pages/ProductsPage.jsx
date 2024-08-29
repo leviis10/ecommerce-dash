@@ -5,6 +5,7 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Pagination } from "@nextui-org/react";
 import { CloseFilledIcon, SearchIcon } from "../assets/icons";
 import { useDebounce } from "use-debounce";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   { id: "no", label: "No.", className: "py-3.5 pl-4 pr-3 sm:pl-6" },
@@ -33,6 +34,7 @@ function ProductsPage() {
   const [value] = useDebounce(searchQuery, 700);
   const limit = 10;
   const totalPages = Math.ceil(total / limit);
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async function () {
@@ -53,7 +55,14 @@ function ProductsPage() {
     return <div className="text-red-600 text-center">{error.message}</div>;
   }
 
-  console.log(items);
+  function createProductHandler() {
+    navigate("/dashboard/products/new");
+  }
+
+  function updateProductHandler(productId) {
+    navigate(`/dashboard/products/${productId}`);
+  }
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
@@ -75,14 +84,17 @@ function ProductsPage() {
             {searchQuery && (
               <button
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
-                onChange={() => setSearchQuery("")}
+                onClick={() => setSearchQuery("")}
               >
                 {<CloseFilledIcon />}
               </button>
             )}
           </div>
-          <button className="flex items-center justify-center rounded-md bg-primary px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition duration-150 ease-in-out">
-            Add Product
+          <button
+            onClick={createProductHandler}
+            className="flex items-center justify-center rounded-md bg-primary px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition duration-150 ease-in-out"
+          >
+            Create Product
           </button>
         </div>
       </div>
@@ -132,7 +144,7 @@ function ProductsPage() {
                     <div className="flex justify-center items-center space-x-2">
                       <button
                         className="text-primary hover:text-primary-darker transition duration-150 ease-in-out"
-                        onClick={() => alert("edit button clicked")}
+                        onClick={() => updateProductHandler(item.id)}
                       >
                         <PencilIcon className="h-5 w-5" />
                       </button>

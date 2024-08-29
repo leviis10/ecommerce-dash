@@ -7,6 +7,8 @@ export const productsSlice = createSlice({
     total: 0,
     isLoading: false,
     error: null,
+    categories: [],
+    categoriesLastFetch: null,
   },
   reducers: {
     setProducts(state, action) {
@@ -26,6 +28,10 @@ export const productsSlice = createSlice({
         return item;
       });
     },
+    setCategories(state, action) {
+      state.categories = action.payload;
+      state.categoriesLastFetch = new Date().toISOString();
+    },
     setIsLoading(state, action) {
       state.isLoading = action.payload;
     },
@@ -35,7 +41,13 @@ export const productsSlice = createSlice({
   },
 });
 
-export const { setError, setIsLoading, setProducts, addProduct, editProduct } =
-  productsSlice.actions;
+export const {
+  setError,
+  setIsLoading,
+  setProducts,
+  addProduct,
+  editProduct,
+  setCategories,
+} = productsSlice.actions;
 
 export default productsSlice.reducer;
