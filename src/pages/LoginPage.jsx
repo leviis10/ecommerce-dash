@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod"; // npm i @hookform/resolv
 import * as z from "zod";
 
 import PageTitle from "../components/PageTitle";
-import enigmaGrowLogo from "../assets/enigma_grow.png";
+import { enigmaGrowLogo } from "../assets/images";
 import { useAuth } from "../hooks";
 import { useNavigate } from "react-router-dom";
 

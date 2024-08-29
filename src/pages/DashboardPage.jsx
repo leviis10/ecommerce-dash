@@ -6,11 +6,8 @@ import {
   ShoppingBagIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
-import { useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import { NavLink } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { Outlet } from "react-router-dom";
 import { classNames } from "../utils/style.util";
 
 const navigation = [
@@ -44,7 +41,7 @@ function DashboardPage() {
     logout();
     navigate("/login");
   };
-  const location = useLocation();
+  // const location = useLocation();
 
   return (
     <div className="flex h-screen overflow-hidden bg-background-gray">
@@ -114,10 +111,10 @@ function DashboardPage() {
       <div className="flex-1 overflow-auto focus:outline-none">
         <main className="flex-1 relative z-0 overflow-y-auto py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-            <h1 className="text-2xl font-semibold text-gray-900">
+            {/* <h1 className="text-2xl font-semibold text-gray-900">
               {navigation.find((item) => item.href === location.pathname)
                 ?.name || "Not Found"}
-            </h1>
+            </h1> */}
           </div>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
