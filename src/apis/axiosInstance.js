@@ -29,7 +29,6 @@ axiosInstance.interceptors.request.use(
 // if backend not yet ready
 // const axiosInstance = {
 //   post: (url, body) => {
-//     console.log({ url, body });
 
 //     return {
 //       data: {

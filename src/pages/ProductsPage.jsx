@@ -38,7 +38,6 @@ function ProductsPage() {
 
   useEffect(() => {
     (async function () {
-      console.log(page, limit, value);
       await ProductApi.getProducts(page, limit, value);
     })();
   }, [page, value]);
@@ -59,8 +58,10 @@ function ProductsPage() {
     navigate("/dashboard/products/new");
   }
 
-  function updateProductHandler(productId) {
-    navigate(`/dashboard/products/${productId}`);
+  function updateProductHandler(product) {
+    navigate(`/dashboard/products/${product.id}`, {
+      state: product,
+    });
   }
 
   return (
@@ -144,7 +145,7 @@ function ProductsPage() {
                     <div className="flex justify-center items-center space-x-2">
                       <button
                         className="text-primary hover:text-primary-darker transition duration-150 ease-in-out"
-                        onClick={() => updateProductHandler(item.id)}
+                        onClick={() => updateProductHandler(item)}
                       >
                         <PencilIcon className="h-5 w-5" />
                       </button>

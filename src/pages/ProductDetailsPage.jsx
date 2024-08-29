@@ -1,20 +1,79 @@
 import { Select, SelectItem } from "@nextui-org/react";
-import ProductFormLabel from "../components/ProductFormLabel";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import ProductApi from "../apis/ProductApi";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useLocation, useParams } from "react-router-dom";
+import ProductApi from "../apis/ProductApi";
+import ProductFormLabel from "../components/ProductFormLabel";
+import { IMAGE_PLACEHOLDER_URL } from "../constants/images.constant";
 
 function ProductDetailsPage() {
   const { id } = useParams();
   const { categories } = useSelector((state) => state.products);
+  const location = useLocation();
+  const [product, setProduct] = useState({
+    name: location.state?.name || "",
+    description: location.state?.description || "",
+    price: location.state?.price || "",
+    stock: location.state?.stock || "",
+    image: null,
+    imageUrls:
+      location.state?.imageUrls && location.state?.imageUrls.length > 0
+        ? location.state?.imageUrls[0]
+        : IMAGE_PLACEHOLDER_URL,
+    categories:
+      location.state?.categories.map((category) => category.id.toString()) ||
+      [],
+  });
   const isEditForm = !!id;
 
   useEffect(() => {
     (async function () {
       await ProductApi.getCategories();
     })();
-  }, []);
+  }, [location.state, id]);
+
+  function productChangeHandler(e) {
+    setProduct((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  }
+
+  function categoriesHandlerChange(e) {
+    setProduct((prevState) => {
+      return {
+        ...prevState,
+        categories: [...e],
+      };
+    });
+  }
+
+  function handleImageChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        setProduct((prevState) => {
+          return {
+            ...prevState,
+            image: file,
+            imageUrls: reader.result,
+          };
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function handleRemoveImage() {
+    setProduct((prevState) => {
+      return {
+        ...prevState,
+        image: null,
+        imageUrls: IMAGE_PLACEHOLDER_URL,
+      };
+    });
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -32,6 +91,8 @@ function ProductDetailsPage() {
                 id="name"
                 name="name"
                 type="text"
+                value={product.name}
+                onChange={productChangeHandler}
                 className="border w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter product name"
                 required
@@ -45,6 +106,8 @@ function ProductDetailsPage() {
                 name="description"
                 className="border w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter product name"
+                value={product.description}
+                onChange={productChangeHandler}
                 required
               />
             </div>
@@ -54,7 +117,9 @@ function ProductDetailsPage() {
               <input
                 id="price"
                 name="price"
-                type="text"
+                type="number"
+                value={product.price}
+                onChange={productChangeHandler}
                 className="border w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter product price"
                 required
@@ -67,6 +132,8 @@ function ProductDetailsPage() {
                 id="stock"
                 name="stock"
                 type="number"
+                value={product.stock}
+                onChange={productChangeHandler}
                 className="border w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter product name"
                 required
@@ -75,18 +142,27 @@ function ProductDetailsPage() {
 
             <div>
               <ProductFormLabel name="categories" />
-              <Select
-                id="categories"
-                name="categories"
-                label="select categories"
-                selectionMode="multiple"
-                placeholder="Select categories"
-                className="w-full"
-              >
-                {categories.map((category) => (
-                  <SelectItem key={category.id}>{category.name}</SelectItem>
-                ))}
-              </Select>
+              {categories && categories.length > 0 && (
+                <Select
+                  id="categories"
+                  name="categories"
+                  label="select categories"
+                  selectionMode="multiple"
+                  placeholder="Select categories"
+                  className="w-full"
+                  selectedKeys={product.categories}
+                  onSelectionChange={categoriesHandlerChange}
+                >
+                  {categories.map((category) => (
+                    <SelectItem
+                      key={category.id}
+                      value={category.id.toString()}
+                    >
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+              )}
             </div>
           </div>
 
@@ -97,7 +173,7 @@ function ProductDetailsPage() {
               <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                 <div className="space-y-1 text-center">
                   <img
-                    src="https://placehold.co/400/png"
+                    src={product.imageUrls}
                     alt="Product preview"
                     className="mx-auto h-64 w-64 object-cover rounded-md"
                   />
@@ -115,6 +191,7 @@ function ProductDetailsPage() {
                           id="file-upload"
                           name="file-upload"
                           className="sr-only"
+                          onChange={handleImageChange}
                         />
                       </ProductFormLabel>
                       <p className="pl-1">or drag and drop</p>
@@ -124,6 +201,7 @@ function ProductDetailsPage() {
                     </p>
                     <button
                       type="button"
+                      onClick={handleRemoveImage}
                       className="mt-2 px-3 py-1 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                     >
                       Remove Image
@@ -133,6 +211,21 @@ function ProductDetailsPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            {isEditForm ? "Update product" : "Create Product"}
+          </button>
         </div>
       </form>
     </div>

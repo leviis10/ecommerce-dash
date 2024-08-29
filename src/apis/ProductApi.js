@@ -21,7 +21,6 @@ class ProductApi {
           query,
         },
       });
-      console.log(res);
 
       const { data } = res;
 
